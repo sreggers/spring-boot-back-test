@@ -3,25 +3,26 @@ package be.springboot.demo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin(origins = "https://sreggers.github.io")
 public class UserController {
 
-    private  final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/users")
-    public List<User> getUsers() {
-        return (List<User>) userRepository.findAll();
+    public List<User> getUsers() throws ExecutionException, InterruptedException {
+        return userService.findAll();
     }
 
     @PostMapping("/users")
-    void addUser(@RequestBody User user) {
-        userRepository.save(user);
+    void addUser(@RequestBody User user) throws ExecutionException, InterruptedException {
+        userService.save(user);
     }
 
 }

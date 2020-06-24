@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 @SpringBootApplication
@@ -15,13 +16,17 @@ public class Application {
     }
 
     @Bean
-    CommandLineRunner init(UserRepository userRepository) {
+    CommandLineRunner init(UserService userService) {
         return args -> {
             Stream.of("John", "Julie", "Jennifer", "Helen", "Rachel").forEach(name -> {
                 User user = new User(name, name.toLowerCase() + "@domain.com");
-                userRepository.save(user);
+                try {
+                    userService.save(user);
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
             });
-            userRepository.findAll().forEach(System.out::println);
+            userService.findAll().forEach(System.out::println);
         };
     }
 }
