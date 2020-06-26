@@ -1,28 +1,27 @@
 package be.springboot.demo;
 
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
-@CrossOrigin(origins = "https://sreggers.github.io")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/users")
-    public List<User> getUsers() throws ExecutionException, InterruptedException {
-        return userService.findAll();
+    private Flux<User> getUsers() {
+        return userRepository.findAll();
     }
 
     @PostMapping("/users")
-    void addUser(@RequestBody User user) throws ExecutionException, InterruptedException {
-        userService.save(user);
+    private Mono<User> addUser(@RequestBody User user) {
+        return userRepository.save(user);
     }
 
 }
